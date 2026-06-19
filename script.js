@@ -198,6 +198,7 @@ function renderLightbox() {
   if (item.type === "video") {
     media.controls = true;
     media.autoplay = true;
+    media.preload = "metadata";
     media.playsInline = true;
   } else {
     media.alt = gallery.title;
