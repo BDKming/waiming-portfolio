@@ -82,6 +82,9 @@ let activePage = pages.findIndex((page) => page.classList.contains("active"));
 let isPageAnimating = false;
 let wheelIntent = 0;
 let wheelResetTimer;
+let touchStartY = 0;
+let touchLastY = 0;
+let touchTracking = false;
 
 if (activePage < 0) activePage = 0;
 
@@ -95,6 +98,20 @@ function resolveMediaSrc(item) {
     return `${REMOTE_VIDEO_BASE_URL.replace(/\/$/, "")}/${item.remotePath.replace(/^\//, "")}`;
   }
   return item.src;
+}
+
+function getPageScrollState(page) {
+  const canScrollDown = page.scrollTop + page.clientHeight < page.scrollHeight - 8;
+  const canScrollUp = page.scrollTop > 8;
+  return { canScrollDown, canScrollUp };
+}
+
+function stepPage(direction) {
+  if (isPageAnimating) return;
+  const nextIndex = clamp(activePage + direction, 0, pages.length - 1);
+  if (nextIndex !== activePage) {
+    showPage(pages[nextIndex].dataset.page);
+  }
 }
 
 function showPage(pageId, updateHash = true) {
@@ -299,10 +316,9 @@ window.addEventListener(
     if (!active) return;
 
     const forcePaged = active.classList.contains("cover-page");
-    const canScrollDown = !forcePaged && active.scrollTop + active.clientHeight < active.scrollHeight - 8;
-    const canScrollUp = !forcePaged && active.scrollTop > 8;
+    const { canScrollDown, canScrollUp } = getPageScrollState(active);
 
-    if ((event.deltaY > 0 && canScrollDown) || (event.deltaY < 0 && canScrollUp)) {
+    if ((event.deltaY > 0 && !forcePaged && canScrollDown) || (event.deltaY < 0 && !forcePaged && canScrollUp)) {
       return;
     }
 
@@ -318,14 +334,72 @@ window.addEventListener(
     }
 
     const direction = wheelIntent > 0 ? 1 : -1;
-    const nextIndex = clamp(activePage + direction, 0, pages.length - 1);
-    if (nextIndex !== activePage) {
+    event.preventDefault();
+    stepPage(direction);
+  },
+  { passive: false }
+);
+
+window.addEventListener(
+  "touchstart",
+  (event) => {
+    if (lightbox?.classList.contains("active") || event.touches.length !== 1) return;
+    touchStartY = event.touches[0].clientY;
+    touchLastY = touchStartY;
+    touchTracking = true;
+  },
+  { passive: true }
+);
+
+window.addEventListener(
+  "touchmove",
+  (event) => {
+    if (!touchTracking || isPageAnimating || event.touches.length !== 1) return;
+    touchLastY = event.touches[0].clientY;
+
+    const active = pages[activePage];
+    if (!active) return;
+
+    const deltaY = touchStartY - touchLastY;
+    const direction = deltaY > 0 ? 1 : -1;
+    const forcePaged = active.classList.contains("cover-page");
+    const { canScrollDown, canScrollUp } = getPageScrollState(active);
+    const canScrollInDirection = !forcePaged && ((direction > 0 && canScrollDown) || (direction < 0 && canScrollUp));
+
+    if (Math.abs(deltaY) > 18 && !canScrollInDirection) {
       event.preventDefault();
-      showPage(pages[nextIndex].dataset.page);
     }
   },
   { passive: false }
 );
+
+window.addEventListener(
+  "touchend",
+  () => {
+    if (!touchTracking || isPageAnimating) return;
+    touchTracking = false;
+
+    const active = pages[activePage];
+    if (!active) return;
+
+    const deltaY = touchStartY - touchLastY;
+    if (Math.abs(deltaY) < 72) return;
+
+    const direction = deltaY > 0 ? 1 : -1;
+    const forcePaged = active.classList.contains("cover-page");
+    const { canScrollDown, canScrollUp } = getPageScrollState(active);
+    const canScrollInDirection = !forcePaged && ((direction > 0 && canScrollDown) || (direction < 0 && canScrollUp));
+
+    if (!canScrollInDirection) {
+      stepPage(direction);
+    }
+  },
+  { passive: true }
+);
+
+window.addEventListener("touchcancel", () => {
+  touchTracking = false;
+});
 
 window.addEventListener("keydown", (event) => {
   if (lightbox?.classList.contains("active")) {
@@ -340,11 +414,9 @@ window.addEventListener("keydown", (event) => {
   if (![...downKeys, ...upKeys].includes(event.key)) return;
 
   event.preventDefault();
-  if (isPageAnimating) return;
 
   const direction = downKeys.includes(event.key) ? 1 : -1;
-  const nextIndex = clamp(activePage + direction, 0, pages.length - 1);
-  showPage(pages[nextIndex].dataset.page);
+  stepPage(direction);
 });
 
 let initialPage = window.location.hash.replace("#", "");
@@ -356,4 +428,3 @@ if (initialPage && pages.some((page) => page.dataset.page === initialPage)) {
 
 setupScrollFloatText();
 setupPressureText();
-

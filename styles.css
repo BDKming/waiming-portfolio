@@ -22,6 +22,8 @@
 html,
 body {
   min-height: 100%;
+  width: 100%;
+  overflow: hidden;
 }
 
 body.lightbox-open {
@@ -121,6 +123,8 @@ a {
   position: absolute;
   inset: 0;
   overflow: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   opacity: 0;
   pointer-events: none;
   filter: blur(12px);
@@ -129,6 +133,12 @@ a {
     opacity 880ms ease,
     filter 900ms ease,
     transform 980ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.page::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
 }
 
 .page.active {
@@ -1443,18 +1453,21 @@ a {
 
 @media (max-width: 1080px) {
   body {
-    overflow: auto;
+    overflow: hidden;
   }
 
   .page-shell {
-    height: auto;
-    overflow: visible;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
   }
 
   .page {
-    position: relative;
-    display: none;
-    min-height: 100vh;
+    position: absolute;
+    display: block;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
   }
 
   .page.active {
@@ -1533,46 +1546,85 @@ a {
 }
 
 @media (max-width: 680px) {
+  body {
+    font-size: 15px;
+  }
+
   .site-header {
     align-items: flex-start;
-    min-height: 82px;
-    padding-right: 42px;
+    min-height: 64px;
+    padding: 0;
   }
 
   .site-header nav {
+    top: 22px;
+    left: 18px;
+    right: 36px;
     flex-wrap: wrap;
     justify-content: flex-end;
-    gap: 10px;
+    gap: 12px;
+    padding: 0;
+  }
+
+  .site-header nav a {
+    font-size: 12px;
+  }
+
+  .page-inner {
+    min-height: 100dvh;
+    padding: 88px 34px 42px 20px;
+  }
+
+  .section-heading {
+    align-items: start;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .section-heading h2,
+  .contact-grid h2 {
+    font-size: clamp(34px, 11vw, 48px);
+    line-height: 1.02;
+  }
+
+  .section-copy {
+    max-width: none;
+    font-size: 14px;
+    line-height: 1.75;
   }
 
   .cover-topbar {
     left: 12px;
-    right: 12px;
-    min-height: 74px;
+    right: 34px;
+    min-height: 58px;
     padding: 10px 14px;
-    border-radius: 22px;
+    border-radius: 18px;
   }
 
   .channel {
     font-size: 10px;
+    gap: 8px;
   }
 
   .cover-center {
-    padding-top: 132px;
+    min-height: 100dvh;
+    padding: 118px 28px 112px 18px;
   }
 
   .pressure-text {
-    width: 94vw;
-    font-size: clamp(38px, 11vw, 72px);
+    width: min(86vw, 440px);
+    font-size: clamp(34px, 10vw, 56px);
+    line-height: 0.9;
   }
 
   .cover-contact {
     left: 18px;
-    right: 18px;
+    right: 34px;
     bottom: 24px;
     flex-direction: column;
     gap: 6px;
-    font-size: 16px;
+    font-size: 12px;
+    line-height: 1.45;
   }
 
   .timeline article {
@@ -1589,15 +1641,24 @@ a {
   }
 
   .resume-name {
-    grid-template-columns: 1fr;
+    grid-template-columns: 104px 1fr;
+    gap: 18px;
+    padding: 20px;
   }
 
   .resume-meta {
     grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 20px;
   }
 
   .avatar-frame {
-    width: min(180px, 70vw);
+    width: 104px;
+  }
+
+  .resume-name h3 {
+    font-size: clamp(38px, 13vw, 58px);
+    line-height: 0.95;
   }
 
   .work-grid,
@@ -1628,7 +1689,7 @@ a {
   .secondary-work-grid .project-cover {
     grid-column: auto;
     grid-row: auto;
-    min-height: 380px;
+    min-height: 0;
   }
 
   .game-grid .project-cover {
@@ -1641,11 +1702,11 @@ a {
   .game-grid .project-cover img,
   .game-grid .project-cover video {
     height: auto;
-    aspect-ratio: 16 / 9;
+    aspect-ratio: 16 / 10;
   }
 
   .project-card-copy {
-    padding: 26px;
+    padding: 22px 20px 24px;
   }
 
   .project-card-copy span,
@@ -1655,13 +1716,31 @@ a {
     margin-left: 0;
   }
 
+  .project-card-copy p {
+    margin: 14px 0 22px;
+    font-size: 14px;
+    line-height: 1.65;
+  }
+
+  .game-grid .project-cover strong {
+    font-size: clamp(42px, 16vw, 68px);
+  }
+
+  .game-grid .project-card-copy em,
+  .project-cover em {
+    min-width: 118px;
+    min-height: 38px;
+    padding: 0 14px;
+    font-size: 11px;
+  }
+
   .showcase-item,
   .showcase-item.hero-item,
   .showcase-item.wide,
   .showcase-item.tall {
     grid-column: auto;
     grid-row: auto;
-    min-height: 380px;
+    min-height: 340px;
   }
 
   .showcase-caption {
@@ -1696,6 +1775,16 @@ a {
   }
 
   .pager {
-    right: 12px;
+    right: 9px;
+    gap: 8px;
+  }
+
+  .pager button {
+    width: 8px;
+    height: 8px;
+  }
+
+  .pager button.active {
+    height: 24px;
   }
 }
