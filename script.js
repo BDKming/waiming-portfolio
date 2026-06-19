@@ -9,38 +9,73 @@ const lightboxClose = lightbox?.querySelector(".lightbox-close");
 const lightboxPrev = lightbox?.querySelector(".lightbox-nav.prev");
 const lightboxNext = lightbox?.querySelector(".lightbox-nav.next");
 
-const REMOTE_VIDEO_BASE_URL = "";
+const REMOTE_VIDEO_BASE_URL = "https://pub-df3be08b24ad41f39ed7da4bef2d8d8f.r2.dev";
 
 const galleries = {
   pg: {
-    title: "瘚瑕??? / PG",
+    title: "海外遊戲項目 / PG",
     items: [
-      { type: "image", src: "assets/originals/game/cover.png" },
-      { type: "image", src: "assets/originals/game/pg/pg-01.png" },
-      { type: "image", src: "assets/originals/game/pg/pg-02.png" },
-      { type: "image", src: "assets/originals/game/pg/pg-03.png" }
+      { type: "video", remotePath: "PG/pg-01.mp4" },
+      { type: "video", remotePath: "PG/pg-02.mp4" },
+      { type: "video", remotePath: "PG/pg-03.mp4" },
+      { type: "video", remotePath: "PG/pg-04.mp4" },
+      { type: "video", remotePath: "PG/pg-05.mp4" },
+      { type: "video", remotePath: "PG/pg-06.mp4" },
+      { type: "video", remotePath: "PG/pg-07.mp4" },
+      { type: "video", remotePath: "PG/pg-08.mp4" },
+      { type: "video", remotePath: "PG/pg-09.mp4" },
+      { type: "video", remotePath: "PG/pg-10.mp4" },
+      { type: "video", remotePath: "PG/pg-11.mp4" },
+      { type: "video", remotePath: "PG/pg-12.mp4" },
+      { type: "video", remotePath: "PG/pg-13.mp4" },
+      { type: "video", remotePath: "PG/pg-14.mp4" },
+      { type: "video", remotePath: "PG/pg-15.mp4" },
+      { type: "video", remotePath: "PG/pg-16.mp4" },
+      { type: "image", remotePath: "PG/pg-image-01.png" },
+      { type: "image", remotePath: "PG/pg-image-02.png" },
+      { type: "image", remotePath: "PG/pg-image-03.png" },
+      { type: "image", remotePath: "PG/pg-image-04.png" }
     ]
   },
   hof: {
-    title: "瘚瑕??? / HOF",
+    title: "海外遊戲項目 / HOF",
     items: [
-      { type: "image", src: "assets/originals/game/hof/hof-01.png" }
+      { type: "video", remotePath: "HOF/hof-01.mp4" },
+      { type: "video", remotePath: "HOF/hof-02.mp4" },
+      { type: "video", remotePath: "HOF/hof-03.mp4" },
+      { type: "video", remotePath: "HOF/hof-04.mp4" },
+      { type: "video", remotePath: "HOF/hof-05.mp4" },
+      { type: "video", remotePath: "HOF/hof-06.mp4" },
+      { type: "video", remotePath: "HOF/hof-07.mp4" },
+      { type: "image", remotePath: "HOF/hof.png" }
     ]
   },
   sas: {
-    title: "瘚瑕??? / SAS",
+    title: "海外遊戲項目 / SAS",
     items: [
-      { type: "image", src: "assets/originals/game/game-01.png" }
+      { type: "video", remotePath: "SAS/sas-01.mp4" },
+      { type: "video", remotePath: "SAS/sas-02.mp4" },
+      { type: "video", remotePath: "SAS/sas-03.mp4" },
+      { type: "video", remotePath: "SAS/sas-04.mp4" },
+      { type: "video", remotePath: "SAS/sas-05.mp4" },
+      { type: "video", remotePath: "SAS/sas-06.mp4" }
     ]
   },
   kit: {
-    title: "? 3D ?拇? / 3D Assets",
+    title: "項目 3D 物料 / 3D Assets",
     items: [
-      { type: "image", src: "assets/originals/game/pg/pg-03.png" }
+      { type: "video", remotePath: "项目3D物料/asset-02.mp4" },
+      { type: "video", remotePath: "项目3D物料/asset-03.mp4" },
+      { type: "video", remotePath: "项目3D物料/asset-04.mp4" },
+      { type: "video", remotePath: "项目3D物料/asset-05.mp4" },
+      { type: "video", remotePath: "项目3D物料/asset-06.mp4" },
+      { type: "video", remotePath: "项目3D物料/asset-07.mp4" },
+      { type: "video", remotePath: "项目3D物料/asset-08.mp4" },
+      { type: "video", remotePath: "项目3D物料/asset-09.mp4" }
     ]
   },
   ue: {
-    title: "UE ?湔閬死",
+    title: "UE 場景視覺",
     items: [
       { type: "image", src: "assets/originals/ue/cover.jpg" },
       { type: "image", src: "assets/originals/ue/ue-01.png" },
@@ -53,7 +88,7 @@ const galleries = {
     ]
   },
   brand: {
-    title: "??閬死?游?",
+    title: "品牌視覺整合",
     items: [
       { type: "image", src: "assets/originals/brand/cover.png" },
       { type: "image", src: "assets/originals/brand/brand-02.png" },
@@ -64,7 +99,7 @@ const galleries = {
     ]
   },
   character: {
-    title: "閫撱箸芋??",
+    title: "角色造型 / 建模 / 視覺展示",
     items: [
       { type: "image", src: "assets/originals/character/cover.jpg" },
       { type: "image", src: "assets/originals/character/character-02.jpg" },
@@ -75,7 +110,6 @@ const galleries = {
     ]
   }
 };
-
 let activeGallery = null;
 let activeGalleryIndex = 0;
 let activePage = pages.findIndex((page) => page.classList.contains("active"));
@@ -428,3 +462,4 @@ if (initialPage && pages.some((page) => page.dataset.page === initialPage)) {
 
 setupScrollFloatText();
 setupPressureText();
+
